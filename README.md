@@ -14,7 +14,13 @@ geoDisplay DRSingleCrystal.xml
 Run this example using the script "A_RUN". It  makes the ROOT file (usieng Sarah's example). This program works when using material "PbWO4". This does not give scintillation photons, but you will see Cherenkov photons.
 
 This program is based on the SingleDualCrystal by Sarah Eno (eno@umd.edu).
- 
+
+Here is an example:  K- beam (5 GeV) 
+
+
+![K-beam example](compact/images/kaon_5gev.png?raw=true)
+
+
 
 ##  Installation 
 
