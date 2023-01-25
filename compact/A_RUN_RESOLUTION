@@ -25,6 +25,9 @@ do
   cmd="Resolution.C(1000,\"output/DualTestBeam_10gev_${MPart}.root\",10,\"histos/hist_${MPart}_10gev.root\")"
   root -q $cmd
 
+  cmd="Resolution.C(1000,\"output/DualTestBeam_20gev_${MPart}.root\",20,\"histos/hist_${MPart}_20gev.root\")"
+  root -q $cmd
+
 
   let "n = $n + 1"
 done

@@ -17,12 +17,12 @@ nameY="<hits> / E"
 
 
 Xmin=0.3 
-Xmax=20.-1 
+Xmax=26. 
 Ymin=0.01 
 Ymax=1.19  
 
 # energy points
-energies=[0.5,1,5,10]
+energies=[0.5,1,5,10,20]
 
 
 import sys

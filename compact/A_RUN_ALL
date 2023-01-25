@@ -9,11 +9,11 @@
 
 # gzip output/*.log
 
-batch=8
+batch=10
 
 events=100
 
-energy="10"
+energy="20"
 
 source ./particles.sh
 
@@ -25,8 +25,8 @@ do
   echo "Run for particle ${MPart}"
 
   log="output/DualTestBeam_${energy}gev_${MPart}_${events}evt_$batch.log"
-  nohup ./A_JOB $energy $MPart $events $batch > $log 2>&1 &
-
+  #nohup ./A_JOB $energy $MPart $events $batch > $log 2>&1 &
+  nohup ./A_JOB $energy $MPart $events $batch > /dev/null 2>&1 &
   let "n = $n + 1"
 done
  

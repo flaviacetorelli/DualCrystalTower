@@ -17,12 +17,12 @@ nameY="#sigma / E"
 
 
 Xmin=0.3 
-Xmax=20.
+Xmax=29.
 Ymin=0.95 
 Ymax=10.01 
 
 # energy points
-energies=[0.5,1,5,10]
+energies=[0.5,1,5,10,20]
 
 
 import sys
