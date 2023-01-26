@@ -16,10 +16,10 @@ nameX="E [GeV]"
 nameY="#sigma / E"
 
 
-Xmin=0.3 
-Xmax=29.
-Ymin=0.95 
-Ymax=10.01 
+Xmin=0.2 
+Xmax=21.
+Ymin=0.0 
+Ymax=1.01 
 
 # energy points
 energies=[0.5,1,5,10,20]
@@ -61,7 +61,7 @@ ptmax=20
 s1="([0]/sqrt(x))+[1]"
 
 for i in range(8):
-  leg2=TLegend(0.15, 0.8, 0.4, 0.92);
+  leg2=TLegend(0.18, 0.75, 0.4, 0.92);
   leg2.SetBorderSize(0);
   leg2.SetTextFont(62);
   leg2.SetFillColor(10);
@@ -86,15 +86,17 @@ for i in range(8):
 for i in range(8):
   c1.cd(i+1);
 
-  gPad.SetLeftMargin(0.135)
+  #gPad.SetLogx(1)
+  gPad.SetLeftMargin(0.15)
   print("Draw pad=",i)
   gPad.SetRightMargin(0.01);
+  # second column
   if i>0:
           if (i%2 !=0): 
-                     gPad.SetLeftMargin(0.001);
-                     gPad.SetRightMargin(0.10);
+                     gPad.SetLeftMargin(0.11);
+                     gPad.SetRightMargin(0.05);
 
-  gPad.SetBottomMargin(0.005);
+  gPad.SetBottomMargin(0.06);
   gPad.SetTopMargin(0.005);
 
   if (i>5): gPad.SetBottomMargin(0.18);
@@ -114,13 +116,14 @@ for i in range(8):
       hh=xfile0.Get("heest")
       hh.SetDirectory(0)
       xfile0.Close()
-      RMS=rms90(hh);
+      RMS=hh.GetRMS() # rms90(hh);
       ERR=hh.GetRMSError()
       MEAN=hh.GetMean()
-      print(e," RMS=",RMS," ERR=",ERR)
+      if (e<1 and part=="proton"): continue # Bragg peak -> avoid  
+      print(part, e,"GeV  RMS=",RMS," MEAN=",MEAN," RMS/MEAN=",RMS/MEAN)
       elec.SetPoint(j,e,RMS/MEAN)
       elec.SetPointError(j,0.0,ERR/MEAN)
-      if (j==0): MaxY=(RMS/MEAN)*1.2
+      if (j==1): MaxY=(RMS/MEAN)*3 
       j=j+1
 
   Ymax=MaxY
@@ -134,33 +137,37 @@ for i in range(8):
   ax.SetLabelSize(0.07)
   ax.SetTitleSize(0.09)
   ax.SetTitleOffset(1.0)
-  ay.SetTitleOffset(0.9)
+  ay.SetTitleOffset(1.05)
 
   ay.SetLabelSize(0.07)
   ay.SetTitleSize(0.08)
   gPad.SetTickx()
   gPad.SetTicky()
 
-  if (i==0 or i==2 or i==4 or i==6):
-    ay.Draw("same")
-    #ax.Draw("same")
+  #if (i==0 or i==2 or i==4 or i==6):
+  #  ay.Draw("same")
 
   if (i==1 or i==3 or i==5 or i==7):
     ay.SetTitleSize(0.0)
-    ay.SetLabelSize(0.0)
+    #ay.SetLabelSize(0.0)
   if (i<6):
     ax.SetTitleSize(0.0)
-    ax.SetLabelSize(0.0)
- 
+    #ax.SetLabelSize(0.0)
+
+  ay.Draw("same")
+   
   elec.Draw("][pe same")
 
   f1=functions[i] # take a function
   for j in range(20):
-     fitr=elec.Fit(f1,"SRE+","",ptmin,ptmax);
+     fitr=elec.Fit(f1,"SR0E+","",ptmin,ptmax);
      print ("Status=",int(fitr), " is valid=",fitr.IsValid())
      if (fitr.IsValid()==True): break;
   fitr.Print()
   print ("Is valid=",fitr.IsValid())
+
+  # do not show muons. They are MIP 
+  if (part != "mu-"): f1.Draw("same")
 
   par1 = f1.GetParameters()
   a1='%.3f'%( par1[0] )
@@ -182,14 +189,14 @@ for i in range(8):
   # plot legend
   leg2=legends[i]
   leg2.AddEntry(f1,s1,"l")
-  leg2.Draw("same");
+  if (part != "mu-"): leg2.Draw("same");
  
   #leg2.AddEntry(hh0,"<R("+pp+")>= "+str(mean0),"fl")
   #leg2.Draw("same");
 
 
   #myTextUser(0.06,0.68,1,0.1,str(e)+" GeV")
-  myTextUser(2,0.01,1,0.1,pp)
+  myTextUser(18,MaxY*0.84,2,0.14,pp)
 
 gPad.RedrawAxis()
 c1.Update()

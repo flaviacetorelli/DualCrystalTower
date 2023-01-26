@@ -68,8 +68,8 @@ ax.Draw("same")
 
 energies=[0.5,1,5,10] 
 
-ptmin=0.45 
-ptmax=20
+ptmin=Xmin
+ptmax=Xmax
 #s1="sqrt(([0]/sqrt(x))*([0]/sqrt(x))+([1]/x)*([1]/x)+[2]*[2])"
 s1="([0]/sqrt(x))+[1]"
 

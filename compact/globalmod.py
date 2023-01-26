@@ -4,6 +4,15 @@ from ROOT import gROOT,gPad,gStyle,TCanvas,TSpline3,TFile,TLine,TLatex,TAxis,TLe
 from ROOT import TH2D,TArrow,TCut,TPad,TH1D,TF1,TObject,TPaveText,TGraph,TGraphErrors,TGraphAsymmErrors
 from ROOT import TMath, TGraph2D,TTree,TMultiGraph,TBranch,gSystem,gDirectory
 from ROOT import TPaveStats
+import random
+
+# par[1] - mean
+# par[2] - sigma
+class Gauss:
+   def __call__( self, x, par ):
+       out=par[0] * TMath.Gaus(x[0],par[1],par[2])
+       return out;
+
 
 # 90% RMS
 # http://agenda.linearcollider.org/event/2703/contributions/8926/attachments/6867/11488/RMS90.pdf
