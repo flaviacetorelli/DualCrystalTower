@@ -70,8 +70,10 @@ void Resolution(int num_evtsmax, const char* inputfilename, float beamE, const c
   TH1F *wave_cherenk  = new TH1F("wave_cherenk ","wave of cherenkov",100,0.,1000);
   TH1F *wave_scintil  = new TH1F("wave_scintil ","wave of scinittilation",100,0.,1000);
 
-
-  TH1F *heest = new TH1F("heest","ratio estimated to true energy",500,0.0,1.2);
+  TH1F *heest = new TH1F("heest","ratio estimated to true energy",1000,0.0,3.0);
+  TH1F *heest_meass = new TH1F("heest_meass","ratio to true energy using Cherenkov+Scintillation",1000,0.0,1000.0);
+  TH1F *heest_scint = new TH1F("heest_scint","ratio to true energy using Scintillation (e- for calibration)",1000,0.0,10.0);
+  TH1F *heest_cherenk = new TH1F("heest_cherenk","ratio to true energy using Cherenkov (e- for calibration)",1000,0.0,10.0);
 
   // max value for multiplicity
   float maxCherenkov=5000000.;
@@ -80,6 +82,10 @@ void Resolution(int num_evtsmax, const char* inputfilename, float beamE, const c
   TH2F *depos_scintil = new TH2F("depos_scintil","NScintilation vs Depos", 1000,0.,100., 1000, 0.0, maxScintil);
   TH2F *depos_cherenk = new TH2F("depos_cherenk","Cherenkov vs Depos",     1000,0.,100., 1000, 0.0,  maxCherenkov);
   TH2F *schint_cherenk = new TH2F("schint_cherenk","Scintil vs Cherenkov", 1000,0., maxScintil, 1000, 0.0, maxCherenkov);
+
+  // after calibration
+  TH2F *schint_cherenk_calib = new TH2F("schint_cherenk_calib","Scintil vs Cherenkov (e- calibrated)", 3000,0.,30000., 3000, 0.0, 30000.0);
+  TH2F *schint_cherenk_calib_rel = new TH2F("schint_cherenk_calib_rel","Scintil vs Cherenkov (e- calibrated, normalized)", 3000,0.,1.2, 3000, 0.0, 1.2);
 
   TH1F *scintilVsdepos = new TH1F("scintilPerMeV","L: N of scintillation per MeV",1000,0., 1000);
   TH1F *cherenkVsdepos = new TH1F("cherenkPerMeV","L: N of cherenkov per MeV",1000,0., 1000);
@@ -254,8 +260,52 @@ void Resolution(int num_evtsmax, const char* inputfilename, float beamE, const c
       float mainee=beamE*1000;
       heest->Fill((esum)/mainee);
 
+ 
+      // reconstructed from Scintillation
+      // this calibration found using e- guns 5 GeV
+      float calibration_scint= 0.00524;
+      float energy_scint = calibration_scint * nscinttot;
+      heest_scint->Fill(energy_scint / mainee);
 
-      if(ievt<SCEPRINT2) std::cout<<" total energy deposit "<<esum<<std::endl;
+
+      // corrected energy for Scinitallation + Cherenkov 
+      // https://arxiv.org/pdf/0707.4021.pdf
+      // this calibration found using e- guns 5 GeV 
+      float calibration_cherenkov = 0.00792; 
+      float energy_cherenkov = calibration_cherenkov * ncertot;
+      heest_cherenk->Fill(energy_cherenkov / mainee);
+
+
+      
+      // scatter plot for calibrated signals
+      schint_cherenk_calib->Fill(energy_scint, energy_cherenkov);
+      schint_cherenk_calib_rel->Fill(energy_scint/mainee, energy_cherenkov/mainee);
+ 
+      float h_over_e_S=0.58; // h/e for scinittilation 
+      float h_over_e_C=0.39; // h/e for cherenkov 
+      //float kappa=(1-h_over_e_S) / (1-h_over_e_C);
+ 
+      float kappa=0.68; 
+      float a1=( energy_scint - kappa * energy_cherenkov);
+      float a2= 1 - kappa;
+
+      // overall calibration
+      float calibration = 1.0;
+      float energy_rec = (calibration)*a1/a2;
+      heest_meass->Fill(energy_rec/mainee);
+
+       /* debug 
+       std::cout<<" True energy =  "<< mainee  << std::endl;
+       std::cout<<" Hit energy deposit =  "<<esum << std::endl;
+       std::cout<<" kappa = "<< kappa  << std::endl;
+       std::cout<<" Scint energy = "<< energy_scint  << std::endl;
+       std::cout<<" Cherenkov energy = "<< energy_cherenkov   << std::endl;
+       std::cout<<" a1 = "<< a1   << std::endl;
+       std::cout<<" a2 = "<< a2   << std::endl;
+       std::cout<<" Cherenkov+Scint energy = "<< energy_rec  << std::endl;
+       */
+
+      if(ievt<SCEPRINT2) std::cout<<" total energy deposit "<<esum<< " reco energy =" <<  energy_rec << std::endl;
       float check=0.;
       for( int i=0;i<nchan;i++) {
 	if(ievt<SCEPRINT2) std::cout<<"esum ["<<namechan[i]<<"]="<<esumchan[i]<<std::endl;
@@ -323,11 +373,18 @@ void Resolution(int num_evtsmax, const char* inputfilename, float beamE, const c
   wave_cherenk->Write();
   wave_scintil->Write();
 
+  // corrected ratios
   heest->Write();
+  heest_meass->Write();
+  heest_scint->Write();
+  heest_cherenk->Write();
+
   // sergei
   depos_scintil->Write();
   depos_cherenk->Write();
   schint_cherenk->Write();
+  schint_cherenk_calib->Write();
+  schint_cherenk_calib_rel->Write();
   scintilVsdepos->Write();
   cherenkVsdepos->Write();
   scintil->Write();
