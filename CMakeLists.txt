@@ -78,7 +78,7 @@ dd4hep_configure_output ()
 dd4hep_add_plugin ( DualCrystalTower
     GENERATED G__DualCrystalTower.cxx 
   SOURCES src/*.cpp src/plugins/*.cpp
-  USES    DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond DD4hep::DDG4 DDDetectors
+  USES    DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond DD4hep::DDG4 DD4hep::DDDetectors
           ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP Geant4::Interface
 )
 
@@ -95,7 +95,7 @@ install(TARGETS DualCrystalTower LIBRARY DESTINATION lib)
 install(DIRECTORY include/DualCrystalTower DESTINATION include)
 #
 #---Package installation procedure(s) -----------------------------------------
-install(DIRECTORY data eve scripts DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DualCrystalTower )
+install(DIRECTORY data eve scripts DESTINATION ./)
 #
 #
 #
