@@ -23,26 +23,51 @@ Here is an example:  K- beam (5 GeV)
 
 
 ##  Installation 
+### On LXPLUS
+
+Source the environment.
 
 ```bash
-source /cvmfs/sft.cern.ch/lcg/views/LCG_101/x86_64-centos7-gcc11-opt/setup.sh
-git clone https://github.com/AIDASoft/DD4hep.git
-cd DD4hep/examples
-git clone git@github.com:chekanov/DualCrystalTower.git 
-# edit CMakeLists.txt and add DualCrystalTower to
-# SET(DD4HEP _EXAMPLES "AlignDet CLICSiD ClientTests Conditions DDCMS DDCodex DDDigi DDG4 DDG4_MySensDet LHeD Optica\
-lSurfaces Persistency DDCAD SimpleDetector DualCrystalTower"
-CACHE STRING "List of DD4hep Examples to build")
-
-cd ..
-mkdir build
-mkdir install
-cd build/
-cmake -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DROOT_DIR=$ROOTSYS -D CMAKE_BUILD_TYPE=Release -DDD4HEP_BUILD_EXAMPLES=ON ..
-make -j4
-make install
-cd ..
-source bin/thisdd4hep.sh
+source /cvmfs/sft.cern.ch/lcg/views/dev4/latest/x86_64-centos7-gcc11-opt/setup.sh 
 ```
 
-S.Chekanov (ANL)
+### Local
+Source the environment.
+
+```bash
+source /PATH/root_6-24-06_install/bin/thisroot.sh
+source /PATH/LCIO/setup.sh
+source /PATH/geant4-11.0.0_install/bin/geant4.sh
+source /PATH/DD4hep_install/bin/thisdd4hep.sh
+```
+You can add these lines to your .bashrc file.
+
+### Installing the repo
+
+Clone this repo:
+
+```bash
+git clone git@github.com:flaviacetorelli/DualCrystalTower.git 
+```
+
+Compile:
+
+```bash
+cmake -B build -S . -D CMAKE_INSTALL_PREFIX=install
+cmake --build build -- install
+```
+
+Now to let the programs know where to find our freshly built detector, we have to update this env variable
+
+```bash
+export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
+```
+
+Compile and install after every modification of the c++ detector constructor code.
+
+```bash
+cmake --build build -- install
+```
+
+
+
